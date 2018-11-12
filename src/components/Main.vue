@@ -3,13 +3,13 @@
     <aside class="siderbar">
         <img src="../assets/search.png" width="32px" height="32px" style="margin-top: 42px;cursor: pointer;">
         <img src="../assets/gantan.png"  width="32px" height="32px" style="margin-top: 22px;cursor: pointer;">
-        <pagenation :total="100" style="margin-top: 22px"></pagenation>
+        <pagenation :total="total" style="margin-top: 22px" @change="getInfo"></pagenation>
     </aside>
 
     <section class="app-main">
       <div style="padding-left: 42px;padding-top: 22px">
-        <template v-for="index in 12">
-          <device :index="index"></device>
+        <template v-for="(item,index) in infos">
+          <device :index="index" :info="item"></device>
         </template>
       </div>
     </section>
@@ -25,7 +25,27 @@ export default {
   components: {Pagenation, Device},
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Welcome to Your Vue.js App',
+      infos: [],
+      total: 0,
+    }
+  },
+  created() {
+    this.$http.get('/nbiot/getNbInfo').then(res => {
+      this.total = res.totalPages
+      this.infos = res.content
+    }).catch(err => {
+      this.$toast.error("查询失败,请检查网络状态")
+    })
+  },
+  methods: {
+    getInfo(page){
+      this.$http.get('/nbiot/getNbInfo?page='+ (page-1)).then(res => {
+        this.total = res.totalPages;
+        this.infos = res.content;
+      }).catch(err => {
+        this.$toast.error("查询失败,请检查网络状态")
+      })
     }
   }
 }

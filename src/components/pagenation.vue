@@ -42,7 +42,7 @@
       changePage(page) {
         if (page < 1 || page > this.total) return;
         this.currentPage = page
-        this.$emit('onpagechange', count)
+        this.$emit('change', page)
       }
     }
   }
@@ -62,7 +62,7 @@
   }
 
   .page {
-    transition: all .32s;
+    transition: all .12s;
     line-height: 1.4;
     cursor: pointer;
     font-family: startbucks,sans-serif ;

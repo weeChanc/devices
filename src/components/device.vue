@@ -1,24 +1,22 @@
 <template>
   <section class="device-card device">
     <div class="card-info">
-      <span class="order">34235465784</span>
-      <span class="work-id">一楼 第六个除尘间</span>
+      <span class="order">{{info.imei}}</span>
+      <span class="work-id">{{info.dustwiper.floor}} {{info.dustwiper.number}}</span>
     </div>
     <div class="card-chart">
       <div class="chart press">
         <div :id="'chartright'+index"></div>
       </div>
-      <div class="device-status">
-        <span style="color: #c0a260;">设备状态</span>
-        <div class="status-item nice actived">
-          <span>良好</span>
-          <i class="pointer "></i>
-        </div>
-        <div class="status-item bad actived">
-          <span>警告</span>
-          <i class="pointer"></i>
-        </div>
-      </div>
+      <!--<div class="device-status">-->
+        <!--<span style="color: #c0a260;">设备状态</span>-->
+        <!--<div class="status-item nice actived" v-if="toption.series[0].data[0].value <=60 && poption.series[0].data[0].value <= 500">-->
+          <!--<span>良好</span>-->
+        <!--</div>-->
+        <!--<div v-else class="status-item bad actived">-->
+          <!--<span>警告</span>-->
+        <!--</div>-->
+      <!--</div>-->
       <div class="chart temp">
         <div :id="'chartleft'+index"></div>
       </div>
@@ -41,113 +39,19 @@
     props: {
       index:{
         require: true
+      },
+      info: {
+        require: true
       }
     },
     data: function () {
       return {
-        ratio: 1
+        ratio: 1,
+        toption: null,
+        poption: null,
       }
     },
-    mounted() {
-      this.ratio = window.screen.availWidth/1920
-      const myChart = echarts.init(document.getElementById('chartleft'+this.index));
-      const option = {
-        tooltip: {
-          formatter: "{a} <br/>{b} : {c}%"
-        },
-        series: [
-          {
-            name: '设备温度',
-            type: 'gauge',
-            startAngle: 180,
-            endAngle: 0,
-            splitNumber: 10,
-            detail: {
-              formatter: function (value) {
-                return (value).toFixed() + "/100"
-              },
-              offsetCenter: [0, '-120%'],
-              fontSize: 20
-            },
-            axisLine: {
-              lineStyle: {
-                color: linearColorGradient(10,
-                  {index: 0, color: '2fb880'},
-                  {index: 9, color: 'ffcd42'},
-                  {index: 10, color: 'e94235'}),
-                width: 20,
-              }
-            },
-            splitLine: {
-              // show: false
-            },
-            axisTick: {
-              // show: false
-            },
-            axisLabel: {
-              show: false
-            },
-            data: [{value: 50}]
-          }
-        ]
-      };
-
-      setInterval(function () {
-        option.series[0].data[0].value = (Math.random() * 100).toFixed(2) - 0;
-        myChart.setOption(option, true);
-      }, 2000);
-
-      const myChart2 = echarts.init(document.getElementById('chartright'+this.index));
-      const option2 = {
-
-        tooltip: {
-          formatter: "{a} <br/>{b} : {c}Pa"
-        },
-        series: [
-          {
-            name: '设备温度',
-            type: 'gauge',
-            startAngle: 180,
-            endAngle: 0,
-            max: 7000,
-            min: 0,
-            splitNumber: 7,
-            detail: {
-              formatter: function (value) {
-                return (value).toFixed() + "/7000"
-              },
-              offsetCenter: [0, '-120%'],
-              fontSize: 20,
-
-            },
-
-            axisLine: {
-              lineStyle: {
-                color: linearColorGradient(10, {index: 0, color: '2fb880'},
-                  {index: 5, color: 'ffcd42'},
-                  {index: 10, color: 'e94235'}),
-                width: 20,
-              }
-            },
-            splitLine: {
-              // show: false
-            },
-            axisTick: {
-              // show: false
-            },
-            axisLabel: {
-              show: false
-            },
-            data: [{value: 50}]
-          }
-        ]
-      };
-
-      setInterval(function () {
-        option2.series[0].data[0].value = (Math.random() * 7000).toFixed(2) - 0;
-        myChart2.setOption(option2, true);
-      }, 2000);
-
+    created(){
       function linearColorGradient(total) {
         const result = []
         for (let i = 2; i < arguments.length; i++) {
@@ -173,37 +77,125 @@
         }
         return result
       }
+      const tgradient = linearColorGradient(50,
+        {index: 0, color: '2fb880'},
+        {index: 15, color: 'ffcd42'},
+        {index: 25, color: 'e94235'},
+        {index: 50, color: 'e94235'});
 
-      linearColorGradient(200, {index: 0, color: '2fb880'}, {index: 100, color: '4485f2'}, {
-        index: 200,
-        color: 'e94235'
-      })
+      const pgardient =  linearColorGradient(50,
+        {index: 0, color: '2fb880'},
+        {index: 12, color: 'ffcd42'},
+        {index: 20, color: 'e94235'},
+        {index: 50, color: 'e94235'});
+      this.toption = {
+        tooltip: {
+          formatter: "{a} <br/>{b} : {c}%"
+        },
+        series: [
+          {
+            name: '设备温度',
+            type: 'gauge',
+            startAngle: 180,
+            endAngle: 0,
+            splitNumber: 10,
+            detail: {
+              formatter: function (value) {
+                return (value).toFixed() + "°C"
+              },
+              offsetCenter: [0, '-120%'],
+              fontSize: 20
+            },
+            axisLine: {
+              lineStyle: {
+                color: tgradient,
+                width: 20,
+              }
+            },
+            splitLine: {
+              // show: false
+            },
+            axisTick: {
+              // show: false
+            },
+            axisLabel: {
+              show: false
+            },
+            data: [{value: 50}]
+          }
+        ]
+      };
+      this.poption = {
+
+        tooltip: {
+          formatter: "{a} <br/>{b} : {c}Pa"
+        },
+        series: [
+          {
+            name: '设备温度',
+            type: 'gauge',
+            startAngle: 180,
+            endAngle: 0,
+            max: 2000,
+            min: 0,
+            splitNumber: 7,
+            detail: {
+              formatter: function (value) {
+                return (value).toFixed() + "Pa"
+              },
+              offsetCenter: [0, '-120%'],
+              fontSize: 20,
+
+            },
+
+            axisLine: {
+              lineStyle: {
+                color: pgardient,
+                width: 20,
+              }
+            },
+            splitLine: {
+              // show: false
+            },
+            axisTick: {
+              // show: false
+            },
+            axisLabel: {
+              show: false
+            },
+            data: [{value: 50}]
+          }
+        ]
+      };
+      this.toption.series[0].data[0].value = (Math.random() * 100).toFixed(2) - 0;
+      this.poption.series[0].data[0].value = (Math.random() * 7000).toFixed(2) - 0;
+    },
+    mounted() {
+      this.ratio = window.screen.availWidth/1920
+      const tchart = echarts.init(document.getElementById('chartleft'+this.index));
+      const pchart = echarts.init(document.getElementById('chartright'+this.index));
+      tchart.setOption(this.toption, true);
+      pchart.setOption(this.poption, true);
+
     }
   }
 </script>
 
 <style scoped>
 
-  @font-face {
-    font-family: 星巴克字体;
-    src: url("../assets/font-family/starbucks.otf");
-  }
-
-  html {
-    font-family: 星巴克字体, sans-serif;
-  }
 
   .device-card {
     border-radius: 18px;
     border: 2px solid #31b880;
     display: inline-block;
-    min-width: 520px;
+    min-width: 420px;
   }
 
   .device-card > .card-info {
     background: #31b880;
-    border-top-left-radius: 18px;
-    border-top-right-radius: 18px;
+    width:100%;
+    border-top-left-radius: 16px;
+    border-top-right-radius:  16px;
     padding: 8px;
     margin-bottom: 28px;
     color: white;
@@ -353,7 +345,7 @@
     position: absolute;
     right: 12px;
     bottom: 8px;
-    content: '7000 Pa';
+    content: '> 2000 Pa';
     color: grey;
     font-size: 12px;
   }
