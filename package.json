@@ -14,7 +14,8 @@
     "echarts": "^4.2.0-rc.2",
     "muse-ui": "^3.0.1",
     "muse-ui-toast": "^0.3.0",
-    "qs": "^6.5.2"
+    "qs": "^6.5.2",
+    "vue-cookies": "^1.5.7"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
