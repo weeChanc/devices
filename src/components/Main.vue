@@ -32,7 +32,8 @@
         msg: 'Welcome to Your Vue.js App',
         infos: [],
         total: 0,
-        isShow: false
+        isShow: false,
+        page: 1
       }
     },
     created() {
@@ -45,6 +46,7 @@
     },
     methods: {
       getInfo(page) {
+        this.page = page;
         this.$http.get('/nbiot/getNbInfo?page=' + (page - 1)).then(res => {
           this.total = res.totalPages;
           this.infos = res.content;
@@ -59,13 +61,22 @@
         this.isShow = value;
       },
       getSearch(conditions, searchMessage) {
+        if (searchMessage === '') {
+          this.$http.get('/nbiot/getNbInfo?page=' + (this.page - 1)).then(res => {
+            this.infos = res.content;
+          }).catch(err => {
+            this.$toast.error("查询失败,请检查网络状态")
+          })
+        } else {
+          this.$http.post('/nbiot/searchNbInfo', {
+            info: searchMessage
+          }).then(res => {
+            this.infos = res;
+          }).catch(err => {
+            this.$toast.error("查询失败,请检查网络状态")
+          })
+        }
 
-        const url = conditions === 0 ? '' : '';
-        // this.$http.post(url).then(res => {
-        //
-        // }).catch(err => {
-        //
-        // })
       }
 
 

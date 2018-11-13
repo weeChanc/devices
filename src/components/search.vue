@@ -1,27 +1,27 @@
 <template>
-  <searchDialog v-show="showThis">
-    <h2 slot="header">搜索</h2>
-    <div slot="main" class="main">
-      <div class="search">
-        <input type="text" title="" v-model="searchMessage">
-        <img src="../assets/search.png" @click="search"/>
+  <div v-show="showThis">
+    <div class="mask" @click.stop="closeDialog">
+    </div>
+    <div class="dialog">
+      <h2>搜索</h2>
+      <div class="main">
+        <div class="search">
+          <input type="text" title="" v-model="searchMessage" v-focus>
+          <img src="../assets/cancel-circle.png" @click="clean"/>
+        </div>
+        <p>搜索条件：
+          <input type="radio" title="" value="0" v-model="conditions">工位号&nbsp;
+          <input type="radio" title="" value="1" v-model="conditions">地点
+        </p>
       </div>
-      <p>搜索条件：
-        <input type="radio" title="" value="0" v-model="conditions">工位号&nbsp;
-        <input type="radio" title="" value="1" v-model="conditions">地点
-      </p>
     </div>
-    <div slot="footer">
-      <button @click="closeDialog">关闭</button>
-    </div>
-  </searchDialog>
+
+  </div>
 </template>
 
 <script>
-  import SearchDialog from '@/components/searchdialog'
-
   export default {
-    components: {SearchDialog},
+
     props: ['isShow'],
     name: "search",
     data() {
@@ -38,11 +38,8 @@
       closeDialog() {
         this.showThis = false;
       },
-      search() {
-        const {searchMessage, conditions} = this;
-        if (searchMessage !== '') {
-          this.$emit('search', conditions, searchMessage);
-        }
+      clean() {
+        this.searchMessage = ''
       }
     },
     watch: {
@@ -51,6 +48,18 @@
       },
       isShow: function (value) {
         this.showThis = value
+      },
+      searchMessage: function (value) {
+        this.$emit('search', this.conditions, value);
+      },
+      conditions: function (value) {
+        this.$emit('search', value, this.searchMessage);
+
+      }
+    },
+    directives: {
+      focus: function (el) {
+        el.focus();
       }
     }
 
@@ -58,6 +67,30 @@
 </script>
 
 <style>
+  .mask {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+
+  .dialog {
+    height: 200px;
+    background-color: #fff;
+    border-radius: 20px;
+    border: 2px solid #31b880;
+    position: absolute;
+    top: 50%;
+    margin-top: -125px;
+    left: 50%;
+    margin-left: -200px;
+    padding: 20px 30px;
+    z-index: 100;
+  }
+
   h2 {
     margin: 0;
     color: #1da769;
@@ -77,12 +110,12 @@
   }
 
   .search img {
-    width: 25px;
-    height: 25px;
+    width: 15px;
+    height: 15px;
     cursor: pointer;
     position: absolute;
-    right: 5px;
-    top: 6px;
+    right: 7px;
+    top: 10px;
   }
 
   .search input[type='text'] {
