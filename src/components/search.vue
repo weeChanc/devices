@@ -6,12 +6,12 @@
       <h2>搜索</h2>
       <div class="main">
         <div class="search">
-          <input type="text" title="" v-model="searchMessage" v-focus>
+          <input type="text" title="" v-model="searchMessage" v-focus @keyup.enter="closeDialog">
           <img src="../assets/cancel-circle.png" @click="clean"/>
         </div>
         <p>搜索条件：
-          <input type="radio" title="" value="0" v-model="conditions">工位号&nbsp;
-          <input type="radio" title="" value="1" v-model="conditions">地点
+          <input type="radio" title="" value="number" v-model="conditions" >工位号&nbsp;
+          <input type="radio" title="" value="floor" v-model="conditions">地点
         </p>
       </div>
     </div>
@@ -28,7 +28,8 @@
       return {
         showThis: null,
         searchMessage: '',
-        conditions: 0
+        conditions: 'number',
+        timerId: 0
       }
     },
     mounted() {
@@ -50,11 +51,14 @@
         this.showThis = value
       },
       searchMessage: function (value) {
-        this.$emit('search', this.conditions, value);
+        clearTimeout(this.timerId);
+        this.timerId = setTimeout(() => {
+          this.$emit('search', this.conditions, value);
+        }, 500)
+
       },
       conditions: function (value) {
         this.$emit('search', value, this.searchMessage);
-
       }
     },
     directives: {
@@ -82,7 +86,7 @@
     background-color: #fff;
     border-radius: 20px;
     border: 2px solid #31b880;
-    position: absolute;
+    position: fixed;
     top: 50%;
     margin-top: -125px;
     left: 50%;

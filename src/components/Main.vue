@@ -68,9 +68,7 @@
             this.$toast.error("查询失败,请检查网络状态")
           })
         } else {
-          this.$http.post('/nbiot/searchNbInfo', {
-            info: searchMessage
-          }).then(res => {
+          this.$http.get('/nbiot/searchNbInfo?'+conditions+'='+searchMessage).then(res => {
             this.infos = res;
           }).catch(err => {
             this.$toast.error("查询失败,请检查网络状态")
